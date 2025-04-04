@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Abfahrtstabellen</title>
+  <title>RE1 – Abfahrten</title>
   <link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500&display=swap" rel="stylesheet">
   <style>
     body {
@@ -16,44 +16,190 @@
     h1 {
       text-align: center;
       font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    .clock {
+      text-align: center;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .station-selector {
+      text-align: center;
       margin-bottom: 2rem;
     }
-    ul.station-list {
-      list-style: none;
-      padding: 0;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    ul.station-list li {
+    .station-selector button {
       background-color: #004494;
-      margin: 0.5rem 0;
-      padding: 1rem;
-      border-radius: 10px;
+      color: white;
+      border: none;
+      margin: 0.3rem;
+      padding: 0.5rem 1rem;
+      font-size: 1.2rem;
+      border-radius: 5px;
       cursor: pointer;
-      font-size: 1.5rem;
-      transition: background-color 0.2s;
     }
-    ul.station-list li:hover {
+    .station-selector button:hover {
       background-color: #0066cc;
     }
-    a {
-      color: white;
-      text-decoration: none;
-      display: block;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1.3rem;
+      margin-top: 1.5rem;
+    }
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+    }
+    th {
+      background-color: #004494;
+    }
+    tr:nth-child(even) {
+      background-color: #001C45;
+    }
+    .zugart {
+      font-weight: bold;
+      width: 6rem;
+    }
+    .ziel {
+      width: 45%;
+    }
+    .hinweis {
+      width: 20%;
+      font-style: italic;
+      color: yellow;
     }
   </style>
 </head>
 <body>
-  <h1>Abfahrtstabellen</h1>
-  <ul class="station-list">
-    <li><a href="abfahrt.html?station=Bellinzona">Bellinzona</a></li>
-    <li><a href="abfahrt.html?station=Castione-Arbedo">Castione-Arbedo</a></li>
-    <li><a href="abfahrt.html?station=Biasca">Biasca</a></li>
-    <li><a href="abfahrt.html?station=Bodio TI">Bodio TI</a></li>
-    <li><a href="abfahrt.html?station=Lavorgo">Lavorgo</a></li>
-    <li><a href="abfahrt.html?station=Faido">Faido</a></li>
-    <li><a href="abfahrt.html?station=Ambrí-Piotta">Ambrí-Piotta</a></li>
-    <li><a href="abfahrt.html?station=Airolo">Airolo</a></li>
-  </ul>
+  <h1>Abfahrtstabellen – RE1</h1>
+  <div class="clock" id="clock"></div>
+  <div class="station-selector">
+    <button onclick="selectStation('Bellinzona')">Bellinzona</button>
+    <button onclick="selectStation('Castione-Arbedo')">Castione-Arbedo</button>
+    <button onclick="selectStation('Biasca')">Biasca</button>
+    <button onclick="selectStation('Bodio TI')">Bodio TI</button>
+    <button onclick="selectStation('Lavorgo')">Lavorgo</button>
+    <button onclick="selectStation('Faido')">Faido</button>
+    <button onclick="selectStation('Ambrí-Piotta')">Ambrí-Piotta</button>
+    <button onclick="selectStation('Airolo')">Airolo</button>
+  </div>
+
+  <div id="departure-table" style="display:none;">
+    <table>
+      <thead>
+        <tr>
+          <th>Zeit</th>
+          <th>Zug</th>
+          <th>Nach</th>
+          <th>Hinweis</th>
+        </tr>
+      </thead>
+      <tbody id="departures"></tbody>
+    </table>
+    <button onclick="backToSelector()">Zurück zur Übersicht</button>
+  </div>
+
+  <script>
+    const fahrplanRE1 = {
+      'Bellinzona': {
+        minutes: [33],
+        startHour: 4,
+        endHour: 22,
+        destination: 'Nach Airolo',
+        stops: ['Castione-Arbedo', 'Biasca', 'Bodio TI', 'Lavorgo', 'Faido', 'Ambrí-Piotta']
+      },
+      'Castione-Arbedo': {
+        minutes: [37],
+        startHour: 4,
+        endHour: 22,
+        destination: 'Nach Airolo',
+        stops: ['Biasca', 'Bodio TI', 'Lavorgo', 'Faido', 'Ambrí-Piotta', 'Airolo']
+      },
+      'Biasca': {
+        minutes: [47],
+        startHour: 4,
+        endHour: 22,
+        destination: 'Nach Airolo',
+        stops: ['Bodio TI', 'Lavorgo', 'Faido', 'Ambrí-Piotta', 'Airolo']
+      },
+      'Bodio TI': {
+        minutes: [51],
+        startHour: 4,
+        endHour: 22,
+        destination: 'Nach Airolo',
+        stops: ['Lavorgo', 'Faido', 'Ambrí-Piotta', 'Airolo']
+      },
+      'Lavorgo': {
+        minutes: [4],
+        startHour: 4,
+        endHour: 22,
+        destination: 'Nach Airolo',
+        stops: ['Faido', 'Ambrí-Piotta', 'Airolo']
+      },
+      'Faido': {
+        minutes: [10, 50],
+        startHour: 5,
+        endHour: 23,
+        destination: 'Nach Airolo',
+        stops: ['Ambrí-Piotta', 'Airolo']
+      },
+      'Ambrí-Piotta': {
+        minutes: [19],
+        startHour: 6,
+        endHour: 23,
+        destination: 'Nach Airolo',
+        stops: ['Airolo']
+      },
+      'Airolo': {
+        minutes: [26],
+        startHour: 6,
+        endHour: 23,
+        destination: 'Nach Bellinzona',
+        stops: ['Ambrí-Piotta', 'Faido', 'Lavorgo', 'Bodio TI', 'Biasca', 'Castione-Arbedo']
+      }
+    };
+
+    function pad(n) {
+      return n.toString().padStart(2, '0');
+    }
+
+    function formatTime(h, m) {
+      return `${pad(h)}:${pad(m)}`;
+    }
+
+    function renderDepartures(station) {
+      const tbody = document.getElementById('departures');
+      tbody.innerHTML = '';
+      const data = fahrplanRE1[station];
+      
+      data.minutes.forEach(min => {
+        const tr = document.createElement('tr');
+        const time = formatTime(data.startHour, min);
+        tr.innerHTML = `
+          <td>${time}</td>
+          <td class="zugart">RE1</td>
+          <td class="ziel">${data.destination}</td>
+          <td class="hinweis"></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function selectStation(station) {
+      document.getElementById('departure-table').style.display = 'block';
+      document.getElementById('station-selector').style.display = 'none';
+      renderDepartures(station);
+    }
+
+    function backToSelector() {
+      document.getElementById('departure-table').style.display = 'none';
+      document.getElementById('station-selector').style.display = 'block';
+    }
+
+    setInterval(() => {
+      const now = new Date();
+      document.getElementById('clock').textContent = `Aktuelle Uhrzeit: ${formatTime(now.getHours(), now.getMinutes())}:${pad(now.getSeconds())}`;
+    }, 1000);
+  </script>
 </body>
 </html>
