@@ -97,7 +97,7 @@
 
           if (re11Hours.includes(h) && m === 0) {
             departures.push({
-              time: formatTime(h, m, d.getSeconds()),
+              time: formatTime(h, m),
               hour: h,
               minute: m,
               line: 'RE11',
