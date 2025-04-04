@@ -78,7 +78,11 @@
       }
 
       function formatTime(h, m, s) {
-        return `${pad(h)}:${pad(m)}:${pad(s)}`;
+        if (!s) {
+          return `${pad(h)}:${pad(m)}`;
+        } else {
+          return `${pad(h)}:${pad(m)}:${pad(s)}`;
+        }
       }
 
       function extractDelayMinutes(notice) {
