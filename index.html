@@ -81,11 +81,16 @@
         return `${pad(h)}:${pad(m)}`;
       }
 
+      function extractDelayMinutes(notice) {
+        const match = notice.match(/\+\s?(\d{1,2})[‘']/);
+        return match ? parseInt(match[1], 10) : 0;
+      }
+
       function getDepartures() {
         const departures = [];
         const current = new Date();
 
-        for (let i = 0; i < 180; i++) {
+        for (let i = -10; i < 180; i++) { // Auch leicht vergangene Abfahrten checken
           const d = new Date(current.getTime() + i * 60_000);
           const h = d.getHours();
           const m = d.getMinutes();
@@ -93,6 +98,8 @@
           if (re11Hours.includes(h) && m === 0) {
             departures.push({
               time: formatTime(h, m),
+              hour: h,
+              minute: m,
               line: 'RE11',
               destination: 'Fontana – Ossasco – Bedretto – Meiringen',
               notice: h === 19 ? 'ca. +12‘' : ''
@@ -102,6 +109,8 @@
           if (ir82Hours.includes(h) && m === 33) {
             departures.push({
               time: formatTime(h, m),
+              hour: h,
+              minute: m,
               line: 'IR82',
               destination: 'Bedretto – Oberwald – Meiringen',
               notice: ''
@@ -111,15 +120,24 @@
           if (re1Hours.includes(h) && m === 34) {
             departures.push({
               time: formatTime(h, m),
+              hour: h,
+              minute: m,
               line: 'RE1',
               destination: 'Ambrì-Piotta – Faido – Biasca – Bellinzona',
               notice: ''
             });
           }
-
-          if (departures.length >= 8) break;
         }
-        return departures;
+
+        // Filtere nur gültige Verbindungen
+        const now = new Date();
+        return departures.filter(dep => {
+          const delay = extractDelayMinutes(dep.notice);
+          const plannedTime = new Date(now);
+          plannedTime.setHours(dep.hour, dep.minute, 0, 0);
+          plannedTime.setMinutes(plannedTime.getMinutes() + delay);
+          return plannedTime.getTime() + 30_000 >= now.getTime();
+        }).slice(0, 8);
       }
 
       function updateClock() {
