@@ -69,9 +69,9 @@
 
   <script>
     (function() {
-      const re11Hours = [...Array.from({length: 15}, (_, i) => i + 6), 22];
-      const ir82Hours = Array.from({length: 19}, (_, i) => 5 + i);
-      const re1Hours = Array.from({length: 19}, (_, i) => 5 + i);
+      const re11Hours = [...Array.from({length: 3}, (_, i) => i + 7), 5, 11, 13, 15, 16, 17, 18, 20, 22];
+      const ir82Hours = Array.from({length: 15}, (_, i) => 6 + i);
+      const re1Hours = Array.from({length: 18}, (_, i) => 6 + i);
 
       function pad(n) {
         return n.toString().padStart(2, '0');
