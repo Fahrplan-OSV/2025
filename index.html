@@ -77,8 +77,8 @@
         return n.toString().padStart(2, '0');
       }
 
-      function formatTime(h, m) {
-        return `${pad(h)}:${pad(m)}`;
+      function formatTime(h, m, s) {
+        return `${pad(h)}:${pad(m)}:${pad(s)}`;
       }
 
       function extractDelayMinutes(notice) {
@@ -94,12 +94,14 @@
           const d = new Date(current.getTime() + i * 60_000);
           const h = d.getHours();
           const m = d.getMinutes();
+          const s = d.getSeconds();
 
           if (re11Hours.includes(h) && m === 0) {
             departures.push({
-              time: formatTime(h, m),
+              time: formatTime(h, m, s),
               hour: h,
               minute: m,
+              second: s,
               line: 'RE11',
               destination: 'Fontana – Ossasco – Bedretto – Meiringen',
               notice: h === 19 ? 'ca. +12‘' : ''
@@ -108,9 +110,10 @@
 
           if (ir82Hours.includes(h) && m === 33) {
             departures.push({
-              time: formatTime(h, m),
+              time: formatTime(h, m, s),
               hour: h,
               minute: m,
+              second: s,
               line: 'IR82',
               destination: 'Bedretto – Oberwald – Meiringen',
               notice: ''
@@ -119,9 +122,10 @@
 
           if (re1Hours.includes(h) && m === 34) {
             departures.push({
-              time: formatTime(h, m),
+              time: formatTime(h, m, s),
               hour: h,
               minute: m,
+              second: s,
               line: 'RE1',
               destination: 'Ambrì-Piotta – Faido – Biasca – Bellinzona',
               notice: ''
@@ -134,7 +138,7 @@
         return departures.filter(dep => {
           const delay = extractDelayMinutes(dep.notice);
           const plannedTime = new Date(now);
-          plannedTime.setHours(dep.hour, dep.minute, 0, 0);
+          plannedTime.setHours(dep.hour, dep.minute, dep.second, 0);
           plannedTime.setMinutes(plannedTime.getMinutes() + delay);
           return plannedTime.getTime() + 30_000 >= now.getTime();
         }).slice(0, 8);
@@ -142,7 +146,7 @@
 
       function updateClock() {
         const now = new Date();
-        document.getElementById('clock').textContent = `Aktuelle Uhrzeit: ${formatTime(now.getHours(), now.getMinutes())}`;
+        document.getElementById('clock').textContent = `Aktuelle Uhrzeit: ${formatTime(now.getHours(), now.getMinutes(), now.getSeconds())}`;
       }
 
       function renderDepartures() {
