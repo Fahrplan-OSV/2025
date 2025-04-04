@@ -108,7 +108,7 @@
 
           if (ir82Hours.includes(h) && m === 33) {
             departures.push({
-              time: formatTime(h, m, d.getSeconds()),
+              time: formatTime(h, m),
               hour: h,
               minute: m,
               line: 'IR82',
@@ -119,7 +119,7 @@
 
           if (re1Hours.includes(h) && m === 34) {
             departures.push({
-              time: formatTime(h, m, d.getSeconds()),
+              time: formatTime(h, m),
               hour: h,
               minute: m,
               line: 'RE1',
